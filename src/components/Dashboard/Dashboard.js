@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { styled, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -11,7 +11,6 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -20,9 +19,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import Chart from './Chart';
-import Orders from './Orders';
+import HistoryChart from '../HistoryChart';
 import GridMap from '../GridMap';
 import axios from 'axios';
 import AlertList from '../AlertList';
@@ -124,15 +121,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 
 export default function Dashboard({ title, theme }) {
-  const [alerts, setAlerts] = React.useState([]);
-  const [open, setOpen] = React.useState(true);
+  const [alerts, setAlerts] = useState([]);
+  const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', width: '100%' }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
           <Toolbar
@@ -161,11 +158,6 @@ export default function Dashboard({ title, theme }) {
             >
               {title}
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -223,10 +215,15 @@ export default function Dashboard({ title, theme }) {
                   <AlertList alerts={alerts} />
                 </Paper>
               </Grid>
-              {/* Recent Orders */}
+              {/* History Chart */}
               <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <Orders />
+                <Paper sx={{
+                  p: 2,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: 240
+                }}>
+                  <HistoryChart />
                 </Paper>
               </Grid>
             </Grid>

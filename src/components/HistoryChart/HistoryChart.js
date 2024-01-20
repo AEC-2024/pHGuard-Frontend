@@ -1,35 +1,56 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
 import { useTheme } from '@mui/material/styles';
 import { LineChart, axisClasses } from '@mui/x-charts';
 
 import Title from '../Title';
 
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount: amount ?? null };
-}
+const historyURL = "http://localhost:5000/get-history";
+const dateURL = "http://localhost:5000/get-dates";
 
-const data = [
-  createData('00:00', 0),
-  createData('03:00', 300),
-  createData('06:00', 600),
-  createData('09:00', 800),
-  createData('12:00', 1500),
-  createData('15:00', 2000),
-  createData('18:00', 2400),
-  createData('21:00', 2400),
-  createData('24:00'),
-];
-
-export default function Chart() {
+export default function HistoryChart() {
   const theme = useTheme();
+
+  const [chartData, setChartData] = useState([]);
+
+  const fetchData = () => {
+    axios
+      .get(dateURL)
+      .then((resp1) => {
+        const dates = resp1.data
+          .map(val => parseInt(val))
+          .sort(function (a, b) { return a - b });
+
+        let data = [];
+        dates
+          .forEach(date => {
+            axios
+              .get(`${historyURL}?day=${date}`)
+              .then((resp2) => {
+                data.push({ date: date, nAlerts: resp2.data })
+              })
+          });
+
+        console.log(data)
+
+        setChartData(data);
+      })
+      .catch((err) => {
+        console.log(err)
+      });
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <React.Fragment>
-      <Title>Today</Title>
+      <Title>Grid Alerts vs. Date</Title>
       <div style={{ width: '100%', flexGrow: 1, overflow: 'hidden' }}>
         <LineChart
-          dataset={data}
+          dataset={chartData}
           margin={{
             top: 16,
             right: 20,
@@ -38,27 +59,27 @@ export default function Chart() {
           }}
           xAxis={[
             {
+              label: 'Day',
               scaleType: 'point',
-              dataKey: 'time',
-              tickNumber: 2,
+              dataKey: 'date',
+              tickNumber: 1,
               tickLabelStyle: theme.typography.body2,
             },
           ]}
           yAxis={[
             {
-              label: 'Sales ($)',
+              label: 'Number of Alert Grids',
               labelStyle: {
                 ...theme.typography.body1,
                 fill: theme.palette.text.primary,
               },
               tickLabelStyle: theme.typography.body2,
-              max: 2500,
               tickNumber: 3,
             },
           ]}
           series={[
             {
-              dataKey: 'amount',
+              dataKey: 'nAlerts',
               showMark: false,
               color: theme.palette.primary.light,
             },
