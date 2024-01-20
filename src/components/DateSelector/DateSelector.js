@@ -5,10 +5,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-const baseURL = "http://localhost:5000/api/dates";
+// const baseURL = "http://localhost:5000/api/dates";
 
 export default function DateSelector({ onSelection }) {
-  const [dates, setDates] = useState(['1', '2', '3']);
+  const [dates, setDates] = useState(['1', '2']);
   const [date, setDate] = useState('');
 
   useEffect(() => {
