@@ -5,21 +5,21 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-// const baseURL = "http://localhost:5000/api/dates";
+const baseURL = "http://localhost:5000/get-dates";
 
 export default function DateSelector({ onSelection }) {
   const [dates, setDates] = useState(['1', '2']);
   const [date, setDate] = useState('');
 
   useEffect(() => {
-    /*axios
+    axios
       .get(baseURL)
       .then((response) => {
-        setDates(response.data);
+        setDates(response.data.sort(function (a, b) { return a - b }));
         if (dates.length > 0) {
-          setDate(dates[0])
+          updateDate(dates[0])
         }
-      });*/
+      });
   }, []);
 
   const updateDate = (newDate) => {
@@ -44,7 +44,7 @@ export default function DateSelector({ onSelection }) {
         >
         {dates
         .map(d => (
-          <MenuItem value={d}>{d}</MenuItem>
+          <MenuItem value={d} key={d}>{d}</MenuItem>
         ))}
         </Select>
       </FormControl>
