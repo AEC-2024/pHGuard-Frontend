@@ -8,17 +8,21 @@ import Select from '@mui/material/Select';
 const baseURL = "http://localhost:5000/get-dates";
 
 export default function DateSelector({ onSelection }) {
-  const [dates, setDates] = useState(['1', '2']);
+  const [dates, setDates] = useState([]);
   const [date, setDate] = useState('');
 
   useEffect(() => {
     axios
       .get(baseURL)
       .then((response) => {
-        setDates(response.data.sort(function (a, b) { return a - b }));
+        const numberDates = response.data.map(val => parseInt(val));
+        setDates(numberDates.sort(function (a, b) { return a - b }));
         if (dates.length > 0) {
           updateDate(dates[0])
         }
+      })
+      .catch(() => {
+        setDates([]);
       });
   }, []);
 
@@ -42,10 +46,10 @@ export default function DateSelector({ onSelection }) {
           onChange={handleChange}
           label="Date"
         >
-        {dates
-        .map(d => (
-          <MenuItem value={d} key={d}>{d}</MenuItem>
-        ))}
+          {dates
+            ?.map(d => (
+              <MenuItem value={d} key={d}>{d}</MenuItem>
+            ))}
         </Select>
       </FormControl>
     </div>

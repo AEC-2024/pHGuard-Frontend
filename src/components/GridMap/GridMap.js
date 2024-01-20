@@ -56,7 +56,6 @@ function numberToColorHsl (i) {
   var rgb = hslToRgb(hue, 1, 0.5);
   // we format to css value and return
   const str = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
-  console.log(str)
   return str;
 }
 
@@ -82,7 +81,7 @@ const displayCellData = (cell) => {
   return `Location: ${cell['SK'].split('#')[1]}\n\tTemperature: ${cell['temp']}\n\tAir Quality Index: ${cell['aqi']}\n\tpH: ${cell['ph']}\n\tHumididty: ${cell['humidity']}`
 }
 
-export default function GridMap() {
+export default function GridMap({ setAlerts }) {
   const [xLabels, setXLabels] = useState([]);
   const [yLabels, setYLabels] = useState([]);
   const [graphDate, setGraphDate] = useState('');
@@ -134,20 +133,26 @@ export default function GridMap() {
           .fill(0)
       );
 
+    let alertGrids = [];
+
     // Iterate through the data again to place each
     // cell's data into their respective location.
     data
       .forEach(entry => {
-        const idx = parseLocationStr(entry['SK'].split('#')[1]);
+        const location = entry['SK'].split('#')[1];
+        const idx = parseLocationStr(location);
         if (idx[0] < 0 || idx[1] < 0) return;
 
-        dataArr[idx[0]][idx[1]] = parseInt(entry['agroScore'])
+        const agroScore = parseInt(entry['agroScore']);
+        if (agroScore >= 150) alertGrids.push(location);
+        dataArr[idx[0]][idx[1]] = agroScore;
         cellDataArr[idx[0]][idx[1]] = entry;
       })
 
     // Store the new graph and cell data
     setGraphData(dataArr);
     setCellData(cellDataArr);
+    setAlerts(alertGrids);
   }
 
   useEffect(() => {
@@ -190,7 +195,7 @@ export default function GridMap() {
           onClick={(x, y) => alert(`${displayCellData(cellData[x][y])}`)}
         />
       ) : (
-        <p>Please select a date</p>
+        <p>Please select a date or upload new data.</p>
       )}
     </React.Fragment>
   )

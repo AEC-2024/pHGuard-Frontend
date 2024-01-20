@@ -22,28 +22,20 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Chart from './Chart';
-import Deposits from './Deposits';
 import Orders from './Orders';
 import GridMap from '../GridMap';
+import axios from 'axios';
+import AlertList from '../AlertList';
 
 const uploadData = async (file) => {
-
-  console.log(file)
-
-  /*let formData = new FormData();
+  let formData = new FormData();
   formData.append("file", file);
-  axios
-    .post("http://localhost:5000/api/upload", formData, {
+  await axios
+    .post("http://localhost:5000/upload", formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
-    .then((resp) => {
-      if (resp.status === 200) {
-        // TODO: 
-        // ProcessData(resp.data)
-      }
-    })*/
 }
 
 function Footer(props) {
@@ -132,6 +124,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 
 export default function Dashboard({ title, theme }) {
+  const [alerts, setAlerts] = React.useState([]);
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -215,20 +208,19 @@ export default function Dashboard({ title, theme }) {
                     flexDirection: 'column',
                   }}
                 >
-                  <GridMap title='Mock Data' dataDate='1'/>
+                  <GridMap setAlerts={setAlerts} />
                 </Paper>
               </Grid>
-              {/* Recent Deposits */}
+              {/* Alert List */}
               <Grid item xs={12} md={4} lg={3}>
                 <Paper
                   sx={{
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
-                    height: 240,
                   }}
                 >
-                  <Deposits />
+                  <AlertList alerts={alerts} />
                 </Paper>
               </Grid>
               {/* Recent Orders */}
